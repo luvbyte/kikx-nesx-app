@@ -1,0 +1,914 @@
+@font-face {
+  font-family: 'Cause';
+  src: url('fonts/Cause-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jost';
+  src: url('fonts/Jost-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+
+  overflow: hidden;
+
+  background: #09090b;
+  color: white;
+
+  font-family:
+    'Cause',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  touch-action: manipulation;
+}
+
+button {
+  border: 0;
+  outline: 0;
+
+  font: inherit;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus {
+  outline: none;
+}
+
+.font-heading {
+  font-family: 'Jost', sans-serif;
+}
+
+/*
+ * ---------------------------------------------------------
+ * APP
+ * ---------------------------------------------------------
+ */
+
+#main {
+  width: 100%;
+  height: 100dvh;
+
+  overflow: hidden;
+}
+
+/*
+ * ---------------------------------------------------------
+ * LOADING
+ * ---------------------------------------------------------
+ */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  background: #09090b;
+}
+
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: white;
+
+  border-radius: 50%;
+
+  animation: loading-spin 0.7s linear infinite;
+}
+
+.loading-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * ROM LIBRARY
+ * ---------------------------------------------------------
+ */
+
+.library {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  padding:
+    max(16px, env(safe-area-inset-top))
+    16px
+    max(16px, env(safe-area-inset-bottom))
+    16px;
+}
+
+.library-header {
+  width: 100%;
+  max-width: 640px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 8px 0 18px;
+}
+
+.library-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.library-subtitle {
+  margin-top: 2px;
+
+  font-size: 13px;
+
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.game-count {
+  min-width: 38px;
+  height: 30px;
+
+  padding: 0 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.07);
+
+  color: rgba(255, 255, 255, 0.6);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rom-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 46px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--surface-color);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.rom-search-wrap:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px color-mix(
+    in srgb,
+    var(--accent-color) 12%,
+    transparent
+  );
+}
+
+.rom-search {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 8px 0 10px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.rom-search::placeholder {
+  color: var(--muted-color);
+  opacity: 0.8;
+}
+
+.rom-search::-webkit-search-cancel-button {
+  display: none;
+}
+
+.rom-search-clear {
+  display: none;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--border-color);
+  color: var(--muted-color);
+  font-size: 20px;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.rom-search-clear:hover {
+  color: var(--text-color);
+}
+
+/*
+ * ---------------------------------------------------------
+ * ROM LIST
+ * ---------------------------------------------------------
+ */
+
+.rom-list {
+  width: 100%;
+  max-width: 640px;
+
+  flex: 1;
+
+  margin: 0 auto;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-bottom: 20px;
+
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.rom-list::-webkit-scrollbar {
+  display: none;
+}
+
+.rom-item {
+  width: 100%;
+
+  min-height: 72px;
+
+  margin-bottom: 8px;
+
+  padding: 10px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.055);
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+
+  color: white;
+
+  text-align: left;
+
+  transition:
+    transform 0.08s ease,
+    background 0.08s ease;
+}
+
+.rom-item:active {
+  transform: scale(0.98);
+
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.rom-icon {
+  width: 50px;
+  height: 50px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.07);
+
+  font-size: 25px;
+}
+
+.rom-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.rom-name {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.rom-meta {
+  margin-top: 4px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  font-size: 11px;
+
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.rom-arrow {
+  flex-shrink: 0;
+
+  padding-right: 5px;
+
+  color: rgba(255, 255, 255, 0.3);
+
+  font-size: 22px;
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * EMPTY STATE
+ * ---------------------------------------------------------
+ */
+
+.empty-state {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.empty-icon {
+  margin-bottom: 12px;
+
+  font-size: 48px;
+}
+
+.empty-title {
+  color: rgba(255, 255, 255, 0.8);
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.empty-description {
+  max-width: 280px;
+
+  margin-top: 5px;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * EMULATOR
+ * ---------------------------------------------------------
+ */
+
+.emulator {
+  width: 100%;
+  height: 100dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  padding:
+    max(8px, env(safe-area-inset-top))
+    10px
+    max(10px, env(safe-area-inset-bottom))
+    10px;
+
+  overflow: hidden;
+}
+
+.emulator-header {
+  width: 100%;
+  max-width: 640px;
+
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  flex-shrink: 0;
+}
+
+.back-button {
+  height: 34px;
+
+  padding: 0 12px;
+
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.07);
+
+  color: white;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  touch-action: manipulation;
+}
+
+.back-button:active {
+  transform: scale(0.95);
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.game-title {
+  max-width: 55%;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.header-spacer {
+  width: 64px;
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * NES SCREEN
+ * ---------------------------------------------------------
+ */
+
+.nes-wrapper {
+  width: 100%;
+  max-width: 640px;
+
+  margin-top: 5px;
+
+  display: flex;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+#nes {
+  width: 100%;
+
+  aspect-ratio: 256 / 240;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: black;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 8px 35px rgba(0, 0, 0, 0.45);
+
+  line-height: 0;
+}
+
+#nes canvas {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/*
+ * ---------------------------------------------------------
+ * Controls
+ * ---------------------------------------------------------
+ */
+
+.controls {
+  width: 100%;
+  max-width: 640px;
+
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding-top: 12px;
+  padding-bottom: 32px;
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * SELECT / START
+ * ---------------------------------------------------------
+ */
+
+.system-buttons {
+  display: flex;
+  align-items: center;
+  
+  padding-top: 24px;
+
+  gap: 10px;
+}
+
+.system-button {
+  min-width: 78px;
+  height: 34px;
+
+  padding: 0 14px;
+
+  border-radius: 18px;
+
+  background: #1c1c20;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+
+  color: rgba(255, 255, 255, 0.7);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+
+  touch-action: none;
+
+  transition:
+    transform 0.04s ease,
+    background 0.04s ease;
+}
+
+.system-button.pressed {
+  transform: scale(0.94);
+  background: #3a3a40;
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * NES CONTROLLER
+ * ---------------------------------------------------------
+ */
+
+.nes-controller {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 18px;
+
+  margin-top: auto;
+}
+
+/*
+ * ---------------------------------------------------------
+ * D-PAD
+ * ---------------------------------------------------------
+ */
+
+.dpad {
+  position: relative;
+
+  width: 156px;
+  height: 156px;
+
+  flex-shrink: 0;
+}
+
+.control-button {
+  position: absolute;
+
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  background: #1c1c20;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: rgba(255, 255, 255, 0.85);
+
+  font-size: 18px;
+  font-weight: 800;
+
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.35);
+
+  touch-action: none;
+
+  transition:
+    transform 0.04s ease,
+    background 0.04s ease;
+}
+
+/* UP */
+
+.control-button[data-key="up"] {
+  left: 52px;
+  top: 0;
+
+  border-radius:
+    10px
+    10px
+    3px
+    3px;
+}
+
+
+/* UP + LEFT */
+
+.control-button[data-key="up-left"] {
+  left: 0;
+  top: 0;
+}
+
+
+/* UP + RIGHT */
+
+.control-button[data-key="up-right"] {
+  left: 104px;
+  top: 0;
+}
+
+
+/* LEFT */
+
+.control-button[data-key="left"] {
+  left: 0;
+  top: 52px;
+
+  border-radius:
+    10px
+    3px
+    3px
+    10px;
+}
+
+
+/* RIGHT */
+
+.control-button[data-key="right"] {
+  left: 104px;
+  top: 52px;
+
+  border-radius:
+    3px
+    10px
+    10px
+    3px;
+}
+
+
+/* DOWN + LEFT */
+
+.control-button[data-key="down-left"] {
+  left: 0;
+  top: 104px;
+}
+
+
+/* DOWN */
+
+.control-button[data-key="down"] {
+  left: 52px;
+  top: 104px;
+
+  border-radius:
+    3px
+    3px
+    10px
+    10px;
+}
+
+
+/* DOWN + RIGHT */
+
+.control-button[data-key="down-right"] {
+  left: 104px;
+  top: 104px;
+}
+
+.control-button.pressed {
+  transform: translateY(2px) scale(0.94);
+
+  background: #3a3a40;
+
+  box-shadow: none;
+}
+
+.control-button[data-key="up-left"],
+.control-button[data-key="up-right"],
+.control-button[data-key="down-left"],
+.control-button[data-key="down-right"] {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/*
+ * ---------------------------------------------------------
+ * A / B
+ * ---------------------------------------------------------
+ */
+
+.action-buttons {
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding-right: 4px;
+}
+
+.action-button {
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #242428;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  font-size: 18px;
+  font-weight: 900;
+
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.4);
+
+  touch-action: none;
+
+  transition:
+    transform 0.04s ease,
+    background 0.04s ease;
+}
+
+.action-button.pressed {
+  transform: translateY(3px) scale(0.93);
+
+  background: #3d3d43;
+
+  box-shadow: none;
+}
+
+@media (max-height: 650px) {
+
+  .controls {
+    padding-top: 6px;
+  }
+
+  .dpad {
+    width: 138px;
+    height: 138px;
+  }
+
+  .control-button {
+    width: 46px;
+    height: 46px;
+
+    font-size: 16px;
+  }
+
+  .control-button[data-key="up"] {
+    left: 46px;
+    top: 0;
+  }
+
+  .control-button[data-key="up-left"] {
+    left: 0;
+    top: 0;
+  }
+
+  .control-button[data-key="up-right"] {
+    left: 92px;
+    top: 0;
+  }
+
+  .control-button[data-key="left"] {
+    left: 0;
+    top: 46px;
+  }
+
+  .control-button[data-key="right"] {
+    left: 92px;
+    top: 46px;
+  }
+
+  .control-button[data-key="down-left"] {
+    left: 0;
+    top: 92px;
+  }
+
+  .control-button[data-key="down"] {
+    left: 46px;
+    top: 92px;
+  }
+
+  .control-button[data-key="down-right"] {
+    left: 92px;
+    top: 92px;
+  }
+
+  .action-button {
+    width: 52px;
+    height: 52px;
+
+    font-size: 16px;
+  }
+
+  .action-buttons {
+    gap: 12px;
+  }
+
+  .nes-controller {
+    padding: 0 12px;
+  }
+}

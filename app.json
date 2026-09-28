@@ -1,0 +1,26 @@
+{
+  "name": "com.lvbyte.nesx",
+  "title": "NesX",
+  "author": "luvbyte",
+  "category": "Games",
+  "description": "Nes Emulator",
+  "version": "0.1.0",
+  "kikx_version": "0.4.0",
+
+  "include": ["public", "www"],
+
+  "iframe": {
+    "allowfullscreen": true,
+    "sandbox": ["allow-scripts"]
+  },
+
+  "services": ["fs"],
+
+  "service_config": {
+    "fs": {
+      "home": "read"
+    }
+  },
+
+  "theme": "dark"
+}
