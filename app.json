@@ -4,8 +4,8 @@
   "author": "luvbyte",
   "category": "Games",
   "description": "Nes Emulator",
-  "version": "0.1.0",
-  "kikx_version": "0.4.0",
+  "version": "0.1.2",
+  "kikx_version": "0.4.3",
 
   "include": ["public", "www"],
 
@@ -20,6 +20,12 @@
     "fs": {
       "home": "read"
     }
+  },
+
+  "share": {
+    "message": "Play game",
+    "types": ["file"],
+    "accept": [".nes", ".nsf"]
   },
 
   "theme": "dark"

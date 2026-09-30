@@ -207,10 +207,14 @@
     }
 
     // ----------------------------------------
-    // App information
+    // Info
     // ----------------------------------------
 
+    kikxInfo = () => this.request("info/kikx");
+
     appInfo = () => this.request("info/app");
+
+    kikxAppInfo = () => this.request("info/kikx-app");
 
     getAppsList = (meta = false) =>
       this.request("info/apps-list", {
@@ -378,8 +382,10 @@
       this.config = new KikxConfig(config);
       this.system = new SystemService(this);
 
-      // App full info
+      // App, kikx full info
       this.info = null;
+      this.kikx = null;
+
       // Is App visible in ui
       this.isVisisble = true;
 
@@ -452,17 +458,18 @@
     // ---------------------- Start
 
     async _run() {
-      const { data, error } = await this.system.appInfo();
+      const { data, error } = await this.system.kikxAppInfo();
 
       if (error) {
         throw new Error(
-          "Error fetching app info: " + (error.detail || error.message)
+          "Error fetching kikx-app info: " + (error.detail || error.message)
         );
       }
 
-      await this._appEvents.emit("start", data, false);
+      this.info = data.app;
+      this.kikx = data.kikx;
 
-      this.info = data;
+      await this._appEvents.emit("start", data, false);
     }
 
     async run(callback = null) {
@@ -692,11 +699,48 @@
         limit = -1,
         sort = "name",
         asc = true,
+        filter = "all",
+        extensions = "",
+        search = "",
         thumbnails = false
       } = {}
     ) =>
       this.api("list", {
-        params: { directory, offset, limit, sort, asc, thumbnails }
+        params: {
+          directory,
+          offset,
+          limit,
+          sort,
+          asc,
+          filter,
+          extensions,
+          search,
+          thumbnails
+        }
+      });
+
+    // Quick List Files
+    quickListFiles = (
+      directory,
+      {
+        sort = "name",
+        asc = true,
+        filter = "all",
+        extensions = "",
+        search = "",
+        hidden = true
+      } = {}
+    ) =>
+      this.api("list-simple", {
+        params: {
+          directory,
+          sort,
+          asc,
+          filter,
+          extensions,
+          search,
+          hidden
+        }
       });
 
     // Get thumbnail

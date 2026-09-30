@@ -71,7 +71,14 @@ async function listRoms({ force = false } = {}) {
   romsLoading = true;
 
   try {
-    const { data, error } = await fs.listFiles(romsPath);
+    const isFallbackVersion = kikxApp.kikx.version < "0.4.3";
+
+    const { data, error } = isFallbackVersion
+      ? await fs.listFiles(romsPath)
+      : await fs.quickListFiles(romsPath, {
+          filter: "files",
+          extensions: ".nes,.nsf"
+        });
 
     if (error) {
       console.error("Failed to list ROMs:", error);
@@ -79,11 +86,15 @@ async function listRoms({ force = false } = {}) {
       return romsLibrary;
     }
 
-    const files = data.files.filter(file => {
-      const name = file.name.toLowerCase();
+    const files = !isFallbackVersion
+      ? data.files
+      : data.files.filter(file => {
+          const name = file.name.toLowerCase();
 
-      return file.is_file && (name.endsWith(".nes") || name.endsWith(".nsf"));
-    });
+          return (
+            file.is_file && (name.endsWith(".nes") || name.endsWith(".nsf"))
+          );
+        });
 
     // Update cache
     romsLibrary.length = 0;
@@ -98,7 +109,7 @@ async function listRoms({ force = false } = {}) {
 }
 
 async function fetchRomData(name) {
-  const { data, error } = await fs.readFile(`home://etc/nesx/games/${name}`);
+  const { data, error } = await fs.readFile(`${romsPath}/${name}`);
 
   if (error) {
     throw new Error(error.detail || "Failed to read ROM");
@@ -366,7 +377,7 @@ function renderRomList(roms) {
         </div>
 
         <div class="empty-description">
-          Put ".nes" games in "etc/nesx/games".
+          Put ".nes, .nsf" games in "etc/nesx/games".
         </div>
 
       </div>
@@ -399,15 +410,6 @@ function renderRomList(roms) {
               <span>
                 ${rom.name.toLowerCase().endsWith(".nsf") ? "NSF" : "NES"}
               </span>
-
-              <span>
-                •
-              </span>
-
-              <span>
-                ${formatFileSize(rom.size_bytes)}
-              </span>
-
             </div>
 
           </div>
@@ -986,7 +988,7 @@ function destroyGame() {
 
 async function loadFromPath(path) {
   const { data, error } = await fs.info(path);
-  if (error) {
+  if (error || ![".nes", ".nsf"].includes(data.suffix)) {
     return false;
   }
 
